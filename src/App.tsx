@@ -99,7 +99,6 @@ const App = () => {
     };
   }, [isPanning]);
 
-
   useEffect(() => {
     canvas?.setDimensions({
       height: 500,
@@ -124,10 +123,7 @@ const App = () => {
             <CropImage canvas={canvas} isCropping={isCropping} setIsCropping={setIsCropping} />
             <Annotations canvas={canvas} />
             <ZoomControls canvas={canvas} />
-            <PanControls
-              isPanning={isPanning}
-              setIsPanning={setIsPanning}
-            />
+            <PanControls isPanning={isPanning} setIsPanning={setIsPanning} />
             <LayerControls canvas={canvas} />
             <Rotate canvas={canvas} isCropping={isCropping} />
             <HistoryControls canvas={canvas} />
@@ -135,7 +131,7 @@ const App = () => {
             <DeleteButton canvas={canvas} />
           </div>
 
-          <div className={`canvas-shell p-sm-4 p-0 container-md ${isPanning ? 'is-panning' : ''}`} ref={canvasShellRef}>
+          <div className={`border border-2 border-secondary rounded-3 overflow-hidden d-flex justify-content-center ${isPanning ? 'is-panning' : ''}`} ref={canvasShellRef}>
             <canvas id='canvas' ref={canvasRef} className='editor-canvas' />
           </div>
         </div>

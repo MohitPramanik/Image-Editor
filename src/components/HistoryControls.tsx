@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { type Canvas } from 'fabric';
+import { IoIosRedo, IoIosUndo } from 'react-icons/io';
+import ToolTipButton from './ToolTipButton';
 
 const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
     const historyStack = useRef<string[]>([]);
@@ -85,8 +87,8 @@ const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
 
     return (
         <div style={{height: "max-content"}}>
-            <button onClick={undo} disabled={!canUndo}>Undo</button>
-            <button onClick={redo} disabled={!canRedo}>Redo</button>
+            <ToolTipButton onClick={undo} title="Undo" disabled={!canUndo}><IoIosUndo /></ToolTipButton>
+            <ToolTipButton onClick={redo} title="Redo" disabled={!canRedo}><IoIosRedo /></ToolTipButton>
         </div>
     );
 };

@@ -1,5 +1,7 @@
 import { type Canvas } from "fabric";
 import { useEffect, useState } from "react";
+import { BsLayersFill, BsLayersHalf } from "react-icons/bs";
+import ToolTipButton from "./ToolTipButton";
 
 type LayerControlsProps = {
     canvas: Canvas | null;
@@ -48,8 +50,17 @@ const LayerControls = ({ canvas }: LayerControlsProps) => {
 
     return (
         <div className="d-flex w-max flex-wrap">
-            <button onClick={bringForward} disabled={!hasSelection}>Bring Forward</button>
-            <button onClick={sendBackward} disabled={!hasSelection}>Send Backward</button>
+            <ToolTipButton
+                title="Bring Forward"
+                onClick={bringForward}
+                disabled={!hasSelection}
+            >
+                <BsLayersHalf />
+            </ToolTipButton>
+
+            <ToolTipButton title="Send Backward" onClick={sendBackward} disabled={!hasSelection}>
+                <BsLayersFill />
+            </ToolTipButton>
         </div>
     );
 };

@@ -1,5 +1,8 @@
 import { FabricImage, type Canvas } from 'fabric';
 import { useEffect, useState } from 'react'
+import ToolTipButton from './ToolTipButton';
+import { MdRotate90DegreesCcw } from 'react-icons/md';
+import { GrPowerReset } from 'react-icons/gr';
 
 type RotateProps = {
     canvas: Canvas | null;
@@ -78,8 +81,12 @@ const Rotate = ({ canvas, isCropping }: RotateProps) => {
         <div className='d-flex w-max'>
             {btnEnabled &&
                 <>
-                    <button onClick={rotateImage}>Rotate 90 deg</button>
-                    <button onClick={resetRotation}>Reset Rotation</button>
+                    <ToolTipButton title='Rotate by 90 deg' onClick={rotateImage}>
+                        <MdRotate90DegreesCcw />
+                    </ToolTipButton>
+                    <ToolTipButton title="Reset Rotation" onClick={resetRotation}>
+                        <GrPowerReset />
+                    </ToolTipButton>
                 </>
             }
         </div>

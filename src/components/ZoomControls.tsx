@@ -1,5 +1,8 @@
 import { Point, type Canvas } from "fabric";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
+import { GoZoomIn, GoZoomOut } from "react-icons/go";
+import { TbZoomReset } from "react-icons/tb";
+import ToolTipButton from "./ToolTipButton";
 
 type ZoomControlsProps = {
     canvas: Canvas | null;
@@ -39,17 +42,17 @@ const ZoomControls = ({ canvas }: ZoomControlsProps) => {
         applyZoom(1);
     };
 
-    const zoomLabel = useMemo(() => {
-        if (!canvas) return "100%";
-        return `${Math.round(canvas.getZoom() * 100)}%`;
-    }, [canvas]);
-
     return (
         <div className="d-flex w-max">
-            <button onClick={zoomOut}>Zoom -</button>
-            <button onClick={zoomIn}>Zoom +</button>
-            <button onClick={resetZoom}>Reset Zoom</button>
-            <span style={{ fontWeight: 600, padding: "0 6px" }}>{zoomLabel}</span>
+            <ToolTipButton title="Zoom-out" onClick={zoomOut}>
+                <GoZoomOut />
+            </ToolTipButton>
+            <ToolTipButton title="Zoom-in" onClick={zoomIn}>
+                <GoZoomIn />
+            </ToolTipButton>
+            <ToolTipButton title="Reset zoom" onClick={resetZoom}>
+                <TbZoomReset />
+            </ToolTipButton>
         </div>
     );
 };

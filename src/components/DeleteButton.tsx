@@ -58,7 +58,7 @@ const DeleteButton: React.FC<DeleteObjectProps> = ({ canvas }) => {
                 cursor: hasSelection ? 'pointer' : 'not-allowed',
             }}
         >
-            Delete Selected
+            Delete
         </button>
     );
 };
