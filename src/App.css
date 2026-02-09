@@ -7,7 +7,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  padding: 24px;
+  /* padding: 24px; */
 }
 
 .editor-header {
@@ -50,13 +50,13 @@
   margin-bottom: 18px;
 }
 
-.editor-controls > * {
+.editor-controls>* {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.editor-controls > div:empty {
+.editor-controls>div:empty {
   display: none !important;
 }
 
@@ -88,8 +88,8 @@
 
   &:hover {
     transform: none;
-     border: 1px solid #cbd5f5;
-     box-shadow: none;
+    border: 1px solid #cbd5f5;
+    box-shadow: none;
   }
 }
 
@@ -102,43 +102,62 @@
 }
 
 .canvas-shell {
-  background: repeating-linear-gradient(
-      45deg,
+  background: repeating-linear-gradient(45deg,
       rgba(148, 163, 184, 0.08) 0,
       rgba(148, 163, 184, 0.08) 12px,
       rgba(248, 250, 252, 0.6) 12px,
-      rgba(248, 250, 252, 0.6) 24px
-    ),
+      rgba(248, 250, 252, 0.6) 24px),
     #ffffff;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
   padding: 18px;
-  overflow: auto;
+  display: block;
+  height: max-content;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-x;
+}
+
+.canvas-shell.is-panning {
+  cursor: grab;
+}
+
+.canvas-shell.is-panning:active {
+  cursor: grabbing;
+}
+
+.canvas-container {
+  width: max-content !important;
   display: flex;
   justify-content: center;
+  align-items: center;
+  border-radius: 14px;
+  overflow: visible;
+  border: 1px solid #cbd5f5;
+}
+
+#canvas {
+  width: 800px !important;
+  height: 500px !important;
 }
 
 .editor-canvas {
-  border-radius: 8px;
-  border: 1px solid #cbd5f5;
-  max-width: 100%;
-  height: auto;
+  border-radius: inherit;
+  display: block;
   touch-action: none;
+  left: auto !important;
+
   /* background: #ffffff; */
 }
 
-@media (max-width: 768px) {
-  .editor-card {
-    padding: 16px;
-  }
+.canvas-container,
+.upper-canvas,
+.lower-canvas {
+  touch-action: auto;
+}
 
-  .editor-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .editor-controls {
-    gap: 8px;
-    padding: 10px;
-  }
+.active {
+  color: red !important;
+  font-weight: bold !important;
 }

@@ -3,12 +3,13 @@ import { useEffect, useState, useRef } from 'react';
 
 type CropImageProps = {
     canvas: Canvas | null;
+    isCropping: boolean;
+    setIsCropping: React.Dispatch<React.SetStateAction<boolean>> 
 }
 
-const CropImage = ({ canvas }: CropImageProps) => {
+const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
     const [selectedImage, setSelectedImage] = useState<FabricImage | null>(null);
     const [cropBox, setCropBox] = useState<Rect | null>(null);
-    const [isCropping, setIsCropping] = useState<boolean>(false);
 
     // Use a Ref to track cropping status synchronously 
     // This prevents the selection listeners from clearing the state
@@ -55,7 +56,7 @@ const CropImage = ({ canvas }: CropImageProps) => {
 
         const img = selectedImage;
 
-        // Optional: Disable image selection so it doesn't move during crop
+        // Disabling image selection so it doesn't move during crop
         img.set({ selectable: false, evented: false });
 
         const box = new Rect({
@@ -118,41 +119,37 @@ const CropImage = ({ canvas }: CropImageProps) => {
         const img = selectedImage;
         const center = img.getCenterPoint();
 
-        const rectLeft = cropBox.left ?? 0;
-        const rectTop = cropBox.top ?? 0;
-        const rectWidth = cropBox.getScaledWidth();
-        const rectHeight = cropBox.getScaledHeight();
-
+        cropBox.setCoords();
         const matrix = img.calcTransformMatrix();
         const invMatrix = util.invertTransform(matrix);
-        const tl = util.transformPoint(new Point(rectLeft, rectTop), invMatrix);
-        const br = util.transformPoint(
-            new Point(rectLeft + rectWidth, rectTop + rectHeight),
-            invMatrix
-        );
+        const coords = cropBox.getCoords();
+        const transformed = coords.map((pt) => util.transformPoint(new Point(pt.x, pt.y), invMatrix));
 
         // Fabric local coords are centered; convert to top-left image space
         const imgWidth = img.width || 0;
         const imgHeight = img.height || 0;
 
-        const tlX = tl.x + imgWidth / 2;
-        const tlY = tl.y + imgHeight / 2;
-        const brX = br.x + imgWidth / 2;
-        const brY = br.y + imgHeight / 2;
+        const xs = transformed.map((p) => p.x + imgWidth / 2);
+        const ys = transformed.map((p) => p.y + imgHeight / 2);
 
-        const minX = Math.min(tlX, brX);
-        const minY = Math.min(tlY, brY);
-        const newWidth = Math.abs(brX - tlX);
-        const newHeight = Math.abs(brY - tlY);
+        const minX = Math.min(...xs);
+        const minY = Math.min(...ys);
+        const maxX = Math.max(...xs);
+        const maxY = Math.max(...ys);
 
-        const newCropX = (img.cropX || 0) + minX;
-        const newCropY = (img.cropY || 0) + minY;
+        const newWidth = Math.max(0, maxX - minX);
+        const newHeight = Math.max(0, maxY - minY);
+
+        const cropX = Math.max(0, Math.min(imgWidth, (img.cropX || 0) + minX));
+        const cropY = Math.max(0, Math.min(imgHeight, (img.cropY || 0) + minY));
+        const cropW = Math.max(0, Math.min(imgWidth - cropX, newWidth));
+        const cropH = Math.max(0, Math.min(imgHeight - cropY, newHeight));
 
         img.set({
-            cropX: newCropX,
-            cropY: newCropY,
-            width: newWidth,
-            height: newHeight,
+            cropX,
+            cropY,
+            width: cropW,
+            height: cropH,
             selectable: true,
             evented: true,
             dirty: true // Tells Fabric v6 to redraw the internal buffer
@@ -199,7 +196,7 @@ const CropImage = ({ canvas }: CropImageProps) => {
 
 
     return (
-        <div className='d-flex m-0'>
+        <div className='d-flex m-0 flex-wrap'>
             {selectedImage && !isCropping && (
                 <button onClick={handleClipPath}>Crop Image</button>
             )}

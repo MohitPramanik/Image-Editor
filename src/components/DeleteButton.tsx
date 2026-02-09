@@ -12,7 +12,6 @@ const DeleteButton: React.FC<DeleteObjectProps> = ({ canvas }) => {
         if (!canvas) return;
 
         const updateSelection = () => {
-            // Check if there is at least one object selected
             setHasSelection(canvas.getActiveObjects().length > 0);
         };
 
@@ -30,19 +29,16 @@ const DeleteButton: React.FC<DeleteObjectProps> = ({ canvas }) => {
     const handleDelete = () => {
         if (!canvas) return;
 
-        // 1. Get all currently selected objects (handles single and multi-select)
         const activeObjects = canvas.getActiveObjects();
 
         if (activeObjects.length > 0) {
-            // 2. Remove them from the canvas
+      
             activeObjects.forEach((obj: FabricObject) => {
                 canvas.remove(obj);
             });
 
-            // 3. Clear the selection box from the UI
             canvas.discardActiveObject();
             
-            // 4. Re-render the canvas
             canvas.requestRenderAll();
             
             setHasSelection(false);

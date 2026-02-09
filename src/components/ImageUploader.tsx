@@ -32,12 +32,17 @@ const ImageUploader = ({ canvas }: ImageUploaderProps) => {
         const dataUrl = await fileToDataURL(file);
         const image = await FabricImage.fromURL(dataUrl);
 
+        (image as any).__skipHistory = true;
         image.scaleToHeight(100)
 
         canvas.add(image);
         canvas.centerObject(image);
+        image.setCoords();
+        (image as any).__skipHistory = false;
         canvas.setActiveObject(image);
         canvas.renderAll();
+        // Ensure history captures the centered position, not the initial add position
+        canvas.fire('object:modified', { target: image } as any);
         if (uploaderRef.current) {
             uploaderRef.current.value = '';
         }
