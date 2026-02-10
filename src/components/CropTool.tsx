@@ -1,15 +1,12 @@
-import { FabricImage, Rect, Point, util, type Canvas } from 'fabric';
+import { FabricImage, Rect, Point, util } from 'fabric';
 import { useEffect, useState, useRef } from 'react';
 import { IoCropSharp } from 'react-icons/io5';
 import ToolTipButton from './ToolTipButton';
+import { useCanvas } from '../contexts/CanvasContext';
 
-type CropImageProps = {
-    canvas: Canvas | null;
-    isCropping: boolean;
-    setIsCropping: React.Dispatch<React.SetStateAction<boolean>>
-}
+const CropTool = () => {
 
-const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
+    const {canvas, isCropping, setIsCropping} = useCanvas();
     const [selectedImage, setSelectedImage] = useState<FabricImage | null>(null);
     const [cropBox, setCropBox] = useState<Rect | null>(null);
 
@@ -208,7 +205,7 @@ const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
     return (
         <div className='d-flex m-0 flex-wrap'>
             {selectedImage && !isCropping && (
-                <ToolTipButton title="Crop" onClick={handleClipPath}><IoCropSharp /></ToolTipButton>
+                <ToolTipButton icon={IoCropSharp} title="Crop" onClick={handleClipPath} />
             )}
             {isCropping && (
                 <>
@@ -224,4 +221,4 @@ const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
     );
 };
 
-export default CropImage;
+export default CropTool;

@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { type Canvas } from 'fabric';
+import { useEffect, useState } from 'react';
 import { FaDownload, FaFileExport } from 'react-icons/fa';
 import ToolTipButton from './ToolTipButton';
+import { useCanvas } from '../contexts/CanvasContext';
 
-interface ExportControlsProps {
-    canvas: Canvas | null;
-    isCropping: boolean;
-}
+const ExportControls = () => {
 
-const ExportControls: React.FC<ExportControlsProps> = ({ canvas, isCropping }) => {
+    const { canvas, isCropping } = useCanvas();
     const isCanvasEmpty = !canvas || canvas.getObjects().length === 0;
     const [hasActiveSelection, setHasActiveSelection] = useState(false);
 
@@ -78,19 +75,8 @@ const ExportControls: React.FC<ExportControlsProps> = ({ canvas, isCropping }) =
         <div className='d-flex flex-wrap' style={{ gap: '10px', height: "max-content" }}>
             {!(isCanvasEmpty || !hasActiveSelection || isCropping) ?
                 <>
-                    <ToolTipButton
-                        title='Download Selection'
-                        onClick={exportImage}
-                    >
-                        <FaDownload />
-                    </ToolTipButton>
-
-                    <ToolTipButton
-                        title='Export JSON Data'
-                        onClick={exportJSON}
-                    >
-                        <FaFileExport />
-                    </ToolTipButton>
+                    <ToolTipButton icon={FaDownload} title='Download Selection' onClick={exportImage} />
+                    <ToolTipButton icon={FaFileExport} title='Export JSON Data' onClick={exportJSON} />
                 </>
                 : null
             }

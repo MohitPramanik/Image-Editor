@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { type Canvas, type FabricObject } from 'fabric';
+import { useEffect, useState } from 'react';
+import { type FabricObject } from 'fabric';
+import { useCanvas } from '../contexts/CanvasContext';
 
-interface DeleteObjectProps {
-    canvas: Canvas | null;
-}
 
-const DeleteButton: React.FC<DeleteObjectProps> = ({ canvas }) => {
+const DeleteButton = () => {
+
+    const { canvas } = useCanvas();
     const [hasSelection, setHasSelection] = useState(false);
 
     useEffect(() => {

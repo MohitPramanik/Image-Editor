@@ -1,45 +1,27 @@
-import { memo, useRef } from "react";
-import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { memo } from "react";
 
 type ToolTipButtonProps = {
-    children: React.ReactElement;
+    icon: React.ComponentType;
     className?: string;
     title: string;
     onClick: () => void;
     disabled?: boolean;
 }
 
-const ToolTipButton = ({ children, className, title, onClick, disabled }: ToolTipButtonProps) => {
-    const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const tooltipRef = useRef<any>(null);
-
-    const handleClick = () => {
-        tooltipRef.current?.hide();
-        onClick();
-    };
-
+const ToolTipButton = ({ icon: Icon, className, title, onClick, disabled }: ToolTipButtonProps) => {
     return (
-        <>
-            <OverlayTrigger
-                placement="bottom"
-                delay={{ show: 0, hide: 10 }}
-                overlay={<Tooltip>{title}</Tooltip>}
-            >
-
-                <button
-                    type="button"
-                    className={className || ""}
-                    aria-label={title}
-                    disabled={disabled || false}
-                    onClick={handleClick}
-                    ref={buttonRef}
-                >
-                    {children}
-                </button>
-            </OverlayTrigger>
-
-        </>
-    )
-}
+        <button
+            type="button"
+            className={`tooltip-btn ${className || ""}`}
+            aria-label={title}
+            disabled={disabled}
+            onClick={onClick}
+            data-tooltip={title}
+        >
+            <Icon />
+        </button>
+    );
+};
 
 export default memo(ToolTipButton);
+

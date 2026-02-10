@@ -1,13 +1,11 @@
-import { type Canvas } from "fabric";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BsLayersFill, BsLayersHalf } from "react-icons/bs";
 import ToolTipButton from "./ToolTipButton";
+import { useCanvas } from "../contexts/CanvasContext";
 
-type LayerControlsProps = {
-    canvas: Canvas | null;
-};
+const LayerControls = () => {
 
-const LayerControls = ({ canvas }: LayerControlsProps) => {
+    const { canvas } = useCanvas();
     const [hasSelection, setHasSelection] = useState(false);
 
     useEffect(() => {
@@ -30,37 +28,28 @@ const LayerControls = ({ canvas }: LayerControlsProps) => {
         };
     }, [canvas]);
 
-    const bringForward = () => {
+    const bringForward = useCallback(() => {
         if (!canvas) return;
         const obj = canvas.getActiveObject();
         if (!obj) return;
         canvas.bringObjectForward(obj);
         canvas.requestRenderAll();
         canvas.fire("object:modified", { target: obj } as any);
-    };
+    }, []);
 
-    const sendBackward = () => {
+    const sendBackward = useCallback(() => {
         if (!canvas) return;
         const obj = canvas.getActiveObject();
         if (!obj) return;
         canvas.sendObjectBackwards(obj);
         canvas.requestRenderAll();
         canvas.fire("object:modified", { target: obj } as any);
-    };
+    }, []);
 
     return (
         <div className="d-flex w-max flex-wrap">
-            <ToolTipButton
-                title="Bring Forward"
-                onClick={bringForward}
-                disabled={!hasSelection}
-            >
-                <BsLayersHalf />
-            </ToolTipButton>
-
-            <ToolTipButton title="Send Backward" onClick={sendBackward} disabled={!hasSelection}>
-                <BsLayersFill />
-            </ToolTipButton>
+            <ToolTipButton icon={BsLayersHalf} title="Bring Forward" onClick={bringForward} disabled={!hasSelection} />
+            <ToolTipButton icon={BsLayersFill} title="Send Backward" onClick={sendBackward} disabled={!hasSelection} />
         </div>
     );
 };

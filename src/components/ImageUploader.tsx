@@ -1,12 +1,10 @@
-import { FabricImage, type Canvas } from 'fabric';
+import { FabricImage } from 'fabric';
 import { useRef } from 'react'
+import { useCanvas } from '../contexts/CanvasContext';
 
-type ImageUploaderProps = {
-    canvas: Canvas | null;
-}
+const ImageUploader = () => {
 
-const ImageUploader = ({ canvas }: ImageUploaderProps) => {
-
+    const {canvas} = useCanvas();
     const uploaderRef = useRef<HTMLInputElement | null>(null);
 
     const fileToDataURL = (file: File) =>

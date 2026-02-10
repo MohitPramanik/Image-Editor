@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
-import { type Canvas } from 'fabric';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { IoIosRedo, IoIosUndo } from 'react-icons/io';
 import ToolTipButton from './ToolTipButton';
+import { useCanvas } from '../contexts/CanvasContext';
 
-const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
+const HistoryControls = () => {
+
+    const {canvas} = useCanvas();
     const historyStack = useRef<string[]>([]);
     const redoStack = useRef<string[]>([]);
     const isHandlingHistory = useRef(false); // THE GUARD FLAG
@@ -48,7 +50,7 @@ const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
         };
     }, [canvas]);
 
-    const undo = async () => {
+    const undo = useCallback(async () => {
         if (!canvas || historyStack.current.length <= 1) return;
 
         isHandlingHistory.current = true; // LOCK SAVING
@@ -66,9 +68,9 @@ const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
         isHandlingHistory.current = false; // UNLOCK SAVING
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
-    };
+    }, []);
 
-    const redo = async () => {
+    const redo = useCallback(async () => {
         if (!canvas || redoStack.current.length === 0) return;
 
         isHandlingHistory.current = true; // LOCK SAVING
@@ -83,12 +85,12 @@ const HistoryControls = ({ canvas }: { canvas: Canvas | null }) => {
         isHandlingHistory.current = false; // UNLOCK SAVING
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
-    };
+    }, []);
 
     return (
         <div style={{height: "max-content"}}>
-            <ToolTipButton onClick={undo} title="Undo" disabled={!canUndo}><IoIosUndo /></ToolTipButton>
-            <ToolTipButton onClick={redo} title="Redo" disabled={!canRedo}><IoIosRedo /></ToolTipButton>
+            <ToolTipButton icon={IoIosUndo} onClick={undo} title="Undo" disabled={!canUndo} />
+            <ToolTipButton icon={IoIosRedo} onClick={redo} title="Redo" disabled={!canRedo} />
         </div>
     );
 };

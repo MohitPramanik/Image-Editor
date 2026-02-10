@@ -1,15 +1,13 @@
-import { FabricImage, type Canvas } from 'fabric';
-import { useEffect, useState } from 'react'
+import { FabricImage} from 'fabric';
+import { useCallback, useEffect, useState } from 'react'
 import ToolTipButton from './ToolTipButton';
 import { MdRotate90DegreesCcw } from 'react-icons/md';
 import { GrPowerReset } from 'react-icons/gr';
+import { useCanvas } from '../contexts/CanvasContext';
 
-type RotateProps = {
-    canvas: Canvas | null;
-    isCropping: boolean;
-}
+const Rotate = () => {
 
-const Rotate = ({ canvas, isCropping }: RotateProps) => {
+    const { canvas, isCropping } = useCanvas();
     const [selectedImage, setSelectedImage] = useState<FabricImage | null>(null);
     const [btnEnabled, setBtnEnabled] = useState<boolean>(false);
 
@@ -47,7 +45,7 @@ const Rotate = ({ canvas, isCropping }: RotateProps) => {
         };
     }, [canvas])
 
-    const rotateImage = () => {
+    const rotateImage = useCallback(() => {
         if (!selectedImage || !canvas) return;
 
         const currentAngle = selectedImage.angle || 0;
@@ -61,8 +59,9 @@ const Rotate = ({ canvas, isCropping }: RotateProps) => {
         selectedImage.setCoords();
         canvas.renderAll();
         canvas.fire('object:modified', { target: selectedImage } as any);
-    }
-    const resetRotation = () => {
+    }, [selectedImage]);
+
+    const resetRotation = useCallback(() => {
         if (!selectedImage || !canvas) return;
 
 
@@ -75,18 +74,14 @@ const Rotate = ({ canvas, isCropping }: RotateProps) => {
         selectedImage.setCoords();
         canvas.renderAll();
         canvas.fire('object:modified', { target: selectedImage } as any);
-    }
+    }, [selectedImage]);
 
     return (
         <div className='d-flex w-max'>
             {btnEnabled &&
                 <>
-                    <ToolTipButton title='Rotate by 90 deg' onClick={rotateImage}>
-                        <MdRotate90DegreesCcw />
-                    </ToolTipButton>
-                    <ToolTipButton title="Reset Rotation" onClick={resetRotation}>
-                        <GrPowerReset />
-                    </ToolTipButton>
+                    <ToolTipButton icon={MdRotate90DegreesCcw} title='Rotate by 90 deg' onClick={rotateImage} />
+                    <ToolTipButton icon={GrPowerReset} title="Reset Rotation" onClick={resetRotation} />
                 </>
             }
         </div>

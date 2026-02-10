@@ -1,22 +1,19 @@
-import React from "react";
-import { FaHandPaper } from "react-icons/fa";
+import { useCanvas } from "../contexts/CanvasContext";
 import ToolTipButton from "./ToolTipButton";
+import { FaHandPaper } from "react-icons/fa";
 
-type PanControlsProps = {
-    isPanning: boolean;
-    setIsPanning: React.Dispatch<React.SetStateAction<boolean>>;
-};
+const PanControls = () => {
 
-const PanControls = ({ isPanning, setIsPanning }: PanControlsProps) => {
+    const { isPanning, setIsPanning } = useCanvas();
+
     return (
-        <div className="d-flex w-max">
+        <div className="d-md-none d-flex w-max">
             <ToolTipButton
+                icon={FaHandPaper}
                 title="Pan"
                 className={isPanning ? "active" : undefined}
                 onClick={() => setIsPanning((prev) => !prev)}
-            >
-                <FaHandPaper />
-            </ToolTipButton>
+            />
         </div>
     );
 };

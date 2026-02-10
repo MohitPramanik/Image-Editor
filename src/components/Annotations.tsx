@@ -1,22 +1,20 @@
-import { Circle, Color, FabricObject, IText, PencilBrush, Rect, type Canvas } from 'fabric'
-import { useEffect, useState } from 'react'
+import { Circle, Color, FabricObject, IText, PencilBrush, Rect } from 'fabric'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { RiPencilFill } from "react-icons/ri";
 import { FaLocationArrow, FaRegCircle, FaWineGlass } from "react-icons/fa";
 import { MdOutlineRectangle } from "react-icons/md";
 import { FaWineGlassEmpty } from 'react-icons/fa6';
 import ToolTipButton from './ToolTipButton';
 import { BiText } from 'react-icons/bi';
-
-type AnnotationsProps = {
-    canvas: Canvas | null;
-}
+import { useCanvas } from '../contexts/CanvasContext';
 
 type Mode = "select" | "pencil"
 
 type Shapes = "circle" | "rectangle";
 
-const Annotations = ({ canvas }: AnnotationsProps) => {
+const Annotations = () => {
 
+    const { canvas } = useCanvas();
     const [mode, setMode] = useState<Mode>("select");
     const [fillMode, setFillMode] = useState<boolean>(true);
     const [brushWidth, setBrushWidth] = useState<number>(1);
@@ -93,7 +91,7 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
         }
     }, [selectedItem, color])
 
-    const addText = () => {
+    const addText = useCallback(() => {
         if (!canvas) return;
 
         const text = new IText('Type here...', {
@@ -109,10 +107,10 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
         // Automatically enter edit mode so the user can start typing immediately
         text.enterEditing();
         canvas.renderAll();
-    };
+    }, [])
 
 
-    const addShape = (shapeName: Shapes) => {
+    const addShape = useCallback((shapeName: Shapes) => {
         if (!canvas) return;
 
         setMode("select");
@@ -152,7 +150,7 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
             canvas.centerObject(shape);
             canvas.renderAll();
         }
-    }
+    }, [])
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const nextColor = e.target.value;
@@ -173,42 +171,52 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
         setBrushWidth(val);
     }
 
+    const handleSelect = useCallback(() => {
+        setMode("select")
+    }, [])
+
+    const handleDraw = useCallback(() => {
+        setMode("pencil")
+    }, [])
+
+    const addRectangle = useCallback(() => {
+        addShape("rectangle")
+    }, [])
+
+    const addCircle = useCallback(() => {
+        addShape("circle")
+    }, [])
+
+    const handleFill = useCallback(() => {
+        setFillMode((prev) => !prev)
+    }, [])
 
     return (
-        <div className='d-flex flex-wrap'>
+        <div className='d-flex flex-wrap' style={{ height: "max-content" }}>
             <ToolTipButton
+                icon={FaLocationArrow}
                 className={`${mode === "select" ? "active" : null}`}
                 title='Select'
-                onClick={() => setMode("select")}
-            >
-                <FaLocationArrow />
-            </ToolTipButton>
+                onClick={handleSelect}
+            />
 
             <ToolTipButton
+                icon={RiPencilFill}
                 className={`${mode === "pencil" ? "active" : null}`}
                 title='Draw'
-                onClick={() => setMode("pencil")}
-            >
-                <RiPencilFill />
-            </ToolTipButton>
+                onClick={handleDraw}
+            />
 
-            <ToolTipButton title="Add Rectangle" onClick={() => addShape("rectangle")}>
-                <MdOutlineRectangle />
-            </ToolTipButton>
+            <ToolTipButton icon={MdOutlineRectangle} title="Add Rectangle" onClick={addRectangle} />
+            <ToolTipButton icon={FaRegCircle} title="Add Circle" onClick={addCircle} />
+            <ToolTipButton icon={BiText} title="Add Text" onClick={addText} />
+            <ToolTipButton
+                icon={fillMode ? FaWineGlass : FaWineGlassEmpty}
+                title="Fill Shape"
+                className={`${fillMode ? "active" : null}`}
+                onClick={handleFill} />
 
-            <ToolTipButton title="Add Circle" onClick={() => addShape("circle")}>
-                <FaRegCircle />
-            </ToolTipButton>
-
-            <ToolTipButton title="Add Text" onClick={addText}>
-                <BiText />
-            </ToolTipButton>
-
-            <ToolTipButton title="Fill Shape" onClick={() => setFillMode((prev) => !prev)}>
-                {fillMode ? <FaWineGlass className='text-danger' /> : <FaWineGlassEmpty />}
-            </ToolTipButton>
-
-            <input className="p-0 rounded-2 h-100" type='color' aria-label="Select Color" value={color} onChange={handleColorChange} />
+            <input className="p-0 rounded-2" style={{ height: "42px" }} type='color' aria-label="Select Color" value={color} onChange={handleColorChange} />
             {
                 mode === "pencil" &&
                 <input type="number" value={brushWidth} aria-label="Set Brush Width" onChange={handleBrushWidth} min={1} max={10} />
@@ -218,6 +226,6 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
     )
 }
 
-export default Annotations
+export default memo(Annotations);
 
 
