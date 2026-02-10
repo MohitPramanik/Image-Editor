@@ -164,6 +164,10 @@ const Annotations = () => {
         else {
             selectedItem?.set({ stroke: nextColor, fill: nextColor });
         }
+        if (selectedItem) {
+            selectedItem.setCoords();
+            canvas?.fire('object:modified' as any, { target: selectedItem } as any);
+        }
         canvas?.renderAll();
     }
 
