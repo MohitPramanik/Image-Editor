@@ -35,7 +35,7 @@ const LayerControls = () => {
         canvas.bringObjectForward(obj);
         canvas.requestRenderAll();
         canvas.fire("object:modified", { target: obj } as any);
-    }, []);
+    }, [canvas]);
 
     const sendBackward = useCallback(() => {
         if (!canvas) return;
@@ -44,7 +44,7 @@ const LayerControls = () => {
         canvas.sendObjectBackwards(obj);
         canvas.requestRenderAll();
         canvas.fire("object:modified", { target: obj } as any);
-    }, []);
+    }, [canvas]);
 
     return (
         <div className="d-flex w-max flex-wrap">

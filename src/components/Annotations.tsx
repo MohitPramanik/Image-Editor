@@ -113,9 +113,7 @@ const Annotations = () => {
 
 
     const addShape = (shapeName: Shapes) => {
-        console.log("canvas present")
         if (!canvas) return;
-        console.log("called")
 
         setMode("select");
 
