@@ -68,7 +68,7 @@ const HistoryControls = () => {
         isHandlingHistory.current = false; // UNLOCK SAVING
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
-    }, []);
+    }, [canvas]);
 
     const redo = useCallback(async () => {
         if (!canvas || redoStack.current.length === 0) return;
@@ -85,7 +85,7 @@ const HistoryControls = () => {
         isHandlingHistory.current = false; // UNLOCK SAVING
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
-    }, []);
+    }, [canvas]);
 
     return (
         <div style={{height: "max-content"}}>
