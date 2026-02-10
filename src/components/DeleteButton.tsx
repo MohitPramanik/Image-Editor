@@ -48,6 +48,7 @@ const DeleteButton: React.FC<DeleteObjectProps> = ({ canvas }) => {
     return (
         <button
             onClick={handleDelete}
+            aria-label='delete-btn'
             disabled={!hasSelection}
             style={{
                 backgroundColor: hasSelection ? '#e74c3c' : '#bdc3c7',

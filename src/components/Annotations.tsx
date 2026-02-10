@@ -208,10 +208,10 @@ const Annotations = ({ canvas }: AnnotationsProps) => {
                 {fillMode ? <FaWineGlass className='text-danger' /> : <FaWineGlassEmpty />}
             </ToolTipButton>
 
-            <input className="p-0 rounded-2 h-100" type='color' value={color} onChange={handleColorChange} />
+            <input className="p-0 rounded-2 h-100" type='color' aria-label="Select Color" value={color} onChange={handleColorChange} />
             {
                 mode === "pencil" &&
-                <input type="number" value={brushWidth} onChange={handleBrushWidth} min={1} max={10} />
+                <input type="number" value={brushWidth} aria-label="Set Brush Width" onChange={handleBrushWidth} min={1} max={10} />
             }
 
         </div>

@@ -1,16 +1,17 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Canvas } from 'fabric';
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import './App.css'
-import ImageUploader from './components/ImageUploader';
-import CropImage from './components/CropImage';
-import Rotate from './components/Rotate';
-import HistoryControls from './components/HistoryControls';
-import ExportControls from './components/ExportContorls';
-import DeleteButton from './components/DeleteButton';
-import Annotations from './components/Annotations';
-import ZoomControls from './components/ZoomControls';
-import LayerControls from './components/LayerControls';
-import PanControls from './components/PanControls';
+const ImageUploader = lazy(() => import("./components/ImageUploader"));
+const CropImage = lazy(() => import("./components/CropImage"));
+const Rotate = lazy(() => import("./components/Rotate"));
+const HistoryControls = lazy(() => import("./components/HistoryControls"));
+const ExportControls = lazy(() => import("./components/ExportContorls"));
+const DeleteButton = lazy(() => import("./components/DeleteButton"));
+const Annotations = lazy(() => import("./components/Annotations"));
+const ZoomControls = lazy(() => import("./components/ZoomControls"));
+const LayerControls = lazy(() => import("./components/LayerControls"));
+const PanControls = lazy(() => import("./components/PanControls"));
 
 const App = () => {
 
@@ -107,7 +108,7 @@ const App = () => {
   }, [canvas])
 
   return (
-    <div className="app-root">
+    <main className="app-root">
       <div className="container-md py-4">
         <div className="editor-card p-3">
           <div className="editor-header">
@@ -119,16 +120,18 @@ const App = () => {
           </div>
 
           <div className="editor-controls">
-            <ImageUploader canvas={canvas} />
-            <CropImage canvas={canvas} isCropping={isCropping} setIsCropping={setIsCropping} />
-            <Annotations canvas={canvas} />
-            <ZoomControls canvas={canvas} />
-            <PanControls isPanning={isPanning} setIsPanning={setIsPanning} />
-            <LayerControls canvas={canvas} />
-            <Rotate canvas={canvas} isCropping={isCropping} />
-            <HistoryControls canvas={canvas} />
-            <ExportControls isCropping={isCropping} canvas={canvas} />
-            <DeleteButton canvas={canvas} />
+            <Suspense fallback={null}>
+              <ImageUploader canvas={canvas} />
+              <CropImage canvas={canvas} isCropping={isCropping} setIsCropping={setIsCropping} />
+              <Annotations canvas={canvas} />
+              <ZoomControls canvas={canvas} />
+              <PanControls isPanning={isPanning} setIsPanning={setIsPanning} />
+              <LayerControls canvas={canvas} />
+              <Rotate canvas={canvas} isCropping={isCropping} />
+              <HistoryControls canvas={canvas} />
+              <ExportControls isCropping={isCropping} canvas={canvas} />
+              <DeleteButton canvas={canvas} />
+            </Suspense>
           </div>
 
           <div className={`border border-2 border-secondary rounded-3 overflow-hidden d-flex justify-content-center ${isPanning ? 'is-panning' : ''}`} ref={canvasShellRef}>
@@ -136,7 +139,7 @@ const App = () => {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   )
 }
 

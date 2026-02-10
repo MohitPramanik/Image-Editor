@@ -52,7 +52,7 @@ const ImageUploader = ({ canvas }: ImageUploaderProps) => {
 
     return (
         <>
-            <button className='btn' onClick={uploadImage}>Add Image</button>
+            <button className='btn' aria-label='upload-image-btn' onClick={uploadImage}>Add Image</button>
             <input
                 type="file"
                 accept='image/*'

@@ -172,6 +172,14 @@ const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
         canvas.renderAll();
     };
 
+    const handleCancelCrop = () => {
+        setIsCropping(false);
+        if (cropBox) {
+            canvas?.remove(cropBox);
+            selectedImage?.set({ selectable: true, evented: true });
+        }
+    }
+
 
     useEffect(() => {
         if (!canvas) return;
@@ -203,9 +211,14 @@ const CropImage = ({ canvas, isCropping, setIsCropping }: CropImageProps) => {
                 <ToolTipButton title="Crop" onClick={handleClipPath}><IoCropSharp /></ToolTipButton>
             )}
             {isCropping && (
-                <button onClick={applyCrop} style={{ color: 'red', fontWeight: 'bold' }}>
-                    Confirm Crop
-                </button>
+                <>
+                    <button onClick={applyCrop} className='text-danger fw-bold'>
+                        Confirm Crop
+                    </button>
+                    <button onClick={handleCancelCrop}>
+                        Cancel Crop
+                    </button>
+                </>
             )}
         </div>
     );
