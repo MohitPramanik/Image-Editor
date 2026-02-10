@@ -99,19 +99,23 @@ const Annotations = () => {
             top: 150,
             fontFamily: 'Arial',
             fontSize: 24,
-            fill: color,
+            fill: "black",
         });
 
         canvas.add(text);
         canvas.setActiveObject(text);
+        canvas.centerObject(text);
+        text.selectAll();
         // Automatically enter edit mode so the user can start typing immediately
         text.enterEditing();
         canvas.renderAll();
-    }, [])
+    }, [canvas])
 
 
-    const addShape = ((shapeName: Shapes) => {
+    const addShape = (shapeName: Shapes) => {
+        console.log("canvas present")
         if (!canvas) return;
+        console.log("called")
 
         setMode("select");
 
@@ -150,7 +154,7 @@ const Annotations = () => {
             canvas.centerObject(shape);
             canvas.renderAll();
         }
-    })
+    }
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const nextColor = e.target.value;
@@ -171,25 +175,15 @@ const Annotations = () => {
         setBrushWidth(val);
     }
 
-    const handleSelect = useCallback(() => {
-        setMode("select")
-    }, [])
+    const handleSelect = useCallback(() => setMode("select"), []);
 
-    const handleDraw = useCallback(() => {
-        setMode("pencil")
-    }, [])
+    const handleDraw = useCallback(() => setMode("pencil"), []);
 
-    const addRectangle = useCallback(() => {
-        addShape("rectangle")
-    }, [])
+    const addRectangle = useCallback(() => addShape("rectangle"), [canvas, fillMode]);
 
-    const addCircle = useCallback(() => {
-        addShape("circle")
-    }, [])
+    const addCircle = useCallback(() => addShape("circle"), [canvas, fillMode]);
 
-    const handleFill = useCallback(() => {
-        setFillMode((prev) => !prev)
-    }, [])
+    const handleFill = () => setFillMode((prev) => !prev);
 
     return (
         <div className='d-flex flex-wrap' style={{ height: "max-content" }}>

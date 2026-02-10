@@ -16,7 +16,7 @@ const CanvasBox = () => {
         });
 
         initCanvas.backgroundColor = "#fff";
-        initCanvas.allowTouchScrolling = true;
+        initCanvas.allowTouchScrolling = false;
         initCanvas.renderAll();
 
         setCanvas(initCanvas);
@@ -34,11 +34,13 @@ const CanvasBox = () => {
             canvas.skipTargetFind = true;
             canvas.defaultCursor = 'grab';
             canvas.hoverCursor = 'grab';
+            canvas.allowTouchScrolling = true;
         } else {
             canvas.skipTargetFind = false;
             canvas.selection = true;
             canvas.defaultCursor = 'default';
             canvas.hoverCursor = 'move';
+            canvas.allowTouchScrolling = false;
         }
         canvas.requestRenderAll();
     }, [canvas, isPanning]);
