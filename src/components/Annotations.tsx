@@ -110,7 +110,7 @@ const Annotations = () => {
     }, [])
 
 
-    const addShape = useCallback((shapeName: Shapes) => {
+    const addShape = ((shapeName: Shapes) => {
         if (!canvas) return;
 
         setMode("select");
@@ -150,7 +150,7 @@ const Annotations = () => {
             canvas.centerObject(shape);
             canvas.renderAll();
         }
-    }, [])
+    })
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const nextColor = e.target.value;
