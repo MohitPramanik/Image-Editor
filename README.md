@@ -32,3 +32,5 @@ npm run dev
 ```sh
 npm run build
 ```
+
+Live link: https://image-editor-eight-zeta.vercel.app/
