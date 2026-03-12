@@ -1,7 +1,8 @@
 import { memo } from "react";
+import type { IconType } from "react-icons";
 
 type ToolTipButtonProps = {
-    icon: React.ComponentType;
+    icon: IconType;
     className?: string;
     title: string;
     onClick: () => void;
@@ -12,13 +13,13 @@ const ToolTipButton = ({ icon: Icon, className, title, onClick, disabled }: Tool
     return (
         <button
             type="button"
-            className={`tooltip-btn ${className || ""}`}
+            className={`sidebar-button tooltip-btn ${className || ""}`}
             aria-label={title}
             disabled={disabled}
             onClick={onClick}
             data-tooltip={title}
         >
-            <Icon />
+            <Icon size={20} />
         </button>
     );
 };

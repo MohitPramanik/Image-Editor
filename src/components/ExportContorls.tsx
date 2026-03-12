@@ -57,7 +57,7 @@ const ExportControls = () => {
             multiplier,
         });
 
-        downloadFile(dataUrl, 'edited-image.png');
+        downloadFile(dataUrl, 'optimum-export.png');
     };
 
     const exportJSON = () => {
@@ -68,19 +68,18 @@ const ExportControls = () => {
         const jsonString = JSON.stringify(canvasData, null, 2);
         const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(jsonString)}`;
 
-        downloadFile(dataUrl, 'metadata.json');
+        downloadFile(dataUrl, 'optimum-project.json');
     };
 
     return (
-        <div className='d-flex flex-wrap' style={{ gap: '10px', height: "max-content" }}>
-            {!(isCanvasEmpty || !hasActiveSelection || isCropping) ?
+        <>
+            {!(isCanvasEmpty || !hasActiveSelection || isCropping) && (
                 <>
                     <ToolTipButton icon={FaDownload} title='Download Selection' onClick={exportImage} />
-                    <ToolTipButton icon={FaFileExport} title='Export JSON Data' onClick={exportJSON} />
+                    <ToolTipButton icon={FaFileExport} title='Export Project' onClick={exportJSON} />
                 </>
-                : null
-            }
-        </div>
+            )}
+        </>
     );
 };
 

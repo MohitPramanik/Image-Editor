@@ -14,38 +14,41 @@ const PanControls = lazy(() => import("./components/PanControls"));
 const CanvasBox = lazy(() => import('./components/CanvasBox'));
 
 const App = () => {
-
   return (
     <main className="app-root">
-      <div className="container-md py-4">
-        <div className="editor-card p-3">
-          <div className="editor-header">
-            <div>
-              <div className="eyebrow">Image Editor</div>
-              <h1>Quick edits, clean exports</h1>
-              <p>Crop, rotate, annotate, and export without leaving the page.</p>
-            </div>
+      <div className="editor-layout">
+        <header className="editor-header">
+          <div className="brand">
+            <h1 className="outfit">Optimum Canvas</h1>
+            <p>Pro Image Editor</p>
           </div>
-
-          <Suspense fallback={null}>
-            <div className="editor-controls">
-              <ImageUploader />
-              <CropTool />
-              <Annotations />
-              <ZoomControls />
-              <PanControls />
-              <LayerControls />
-              <Rotate />
+          <div className="header-actions">
+            <Suspense fallback={null}>
               <HistoryControls />
               <ExportControls />
-              <DeleteButton />
-            </div>
-          </Suspense>
+            </Suspense>
+          </div>
+        </header>
 
-          <Suspense fallback={<div className="my-4 mx-3 text-center fw-bold fs-2">Loading ...</div>}>
+        <aside className="editor-sidebar">
+          <Suspense fallback={null}>
+            <ImageUploader />
+            <CropTool />
+            <Annotations />
+            <Rotate />
+            <div className="sidebar-divider" />
+            <ZoomControls />
+            <PanControls />
+            <LayerControls />
+            <DeleteButton />
+          </Suspense>
+        </aside>
+
+        <section className="canvas-area">
+          <Suspense fallback={<div className="text-center text-muted outfit">Initializing Workspace...</div>}>
             <CanvasBox />
           </Suspense>
-        </div>
+        </section>
       </div>
     </main>
   )

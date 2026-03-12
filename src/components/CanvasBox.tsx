@@ -45,7 +45,6 @@ const CanvasBox = () => {
         canvas.requestRenderAll();
     }, [canvas, isPanning]);
 
-
     useEffect(() => {
         const shell = canvasShellRef.current;
         if (!shell) return;
@@ -89,8 +88,10 @@ const CanvasBox = () => {
     }, [isPanning]);
 
     return (
-        <div className={`border border-2 border-secondary rounded-3 overflow-hidden d-flex justify-content-center ${isPanning ? 'is-panning' : ''}`} ref={canvasShellRef}>
-            <canvas id='canvas' ref={canvasRef} className='editor-canvas' />
+        <div className={`canvas-shell ${isPanning ? 'is-panning' : ''}`} ref={canvasShellRef}>
+            <div className="canvas-container">
+                <canvas id='canvas' ref={canvasRef} className='editor-canvas' />
+            </div>
         </div>
     )
 }

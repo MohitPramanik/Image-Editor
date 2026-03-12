@@ -1,15 +1,14 @@
 import { Circle, Color, FabricObject, IText, PencilBrush, Rect } from 'fabric'
 import { memo, useCallback, useEffect, useState } from 'react'
 import { RiPencilFill } from "react-icons/ri";
-import { FaLocationArrow, FaRegCircle, FaWineGlass } from "react-icons/fa";
+import { FaLocationArrow, FaRegCircle } from "react-icons/fa";
 import { MdOutlineRectangle } from "react-icons/md";
-import { FaWineGlassEmpty } from 'react-icons/fa6';
+import { FaWineGlass, FaWineGlassEmpty } from "react-icons/fa6";
 import ToolTipButton from './ToolTipButton';
 import { BiText } from 'react-icons/bi';
 import { useCanvas } from '../contexts/CanvasContext';
 
 type Mode = "select" | "pencil"
-
 type Shapes = "circle" | "rectangle";
 
 const Annotations = () => {
@@ -17,8 +16,8 @@ const Annotations = () => {
     const { canvas } = useCanvas();
     const [mode, setMode] = useState<Mode>("select");
     const [fillMode, setFillMode] = useState<boolean>(true);
-    const [brushWidth, setBrushWidth] = useState<number>(1);
-    const [color, setColor] = useState("#00a34a");
+    const [brushWidth, setBrushWidth] = useState<number>(2);
+    const [color, setColor] = useState("#8b5cf6");
     const [selectedItem, setSelectedItem] = useState<FabricObject | null>(null);
 
     const normalizeToHex = (value: unknown) => {
@@ -36,12 +35,10 @@ const Annotations = () => {
         if (!canvas) return;
 
         const handleSelection = (e: any) => {
-            // IF we are currently cropping, IGNORE selection changes
-
             const selectedObject = e.selected?.[0];
             if (selectedObject) {
                 setSelectedItem(selectedObject);
-
+                setMode("select");
             } else {
                 setSelectedItem(null);
             }
@@ -70,6 +67,8 @@ const Annotations = () => {
             canvas.freeDrawingBrush = new PencilBrush(canvas);
             canvas.freeDrawingBrush.width = brushWidth;
             canvas.freeDrawingBrush.color = color;
+            canvas.discardActiveObject();
+            canvas.renderAll();
         } else {
             canvas.isDrawingMode = false;
         }
@@ -93,61 +92,52 @@ const Annotations = () => {
 
     const addText = useCallback(() => {
         if (!canvas) return;
+        setMode("select");
 
         const text = new IText('Type here...', {
             left: 150,
             top: 150,
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: "black",
+            fontFamily: 'Inter',
+            fontSize: 40,
+            fill: color,
         });
 
         canvas.add(text);
         canvas.setActiveObject(text);
         canvas.centerObject(text);
-        text.selectAll();
-        // Automatically enter edit mode so the user can start typing immediately
         text.enterEditing();
         canvas.renderAll();
-    }, [canvas])
+    }, [canvas, color])
 
 
     const addShape = (shapeName: Shapes) => {
         if (!canvas) return;
-
         setMode("select");
 
         let shape;
+        const shapeProps = {
+            top: 100,
+            left: 100,
+            fill: fillMode ? color : "transparent",
+            stroke: color,
+            strokeWidth: 2,
+            cornerColor: '#fff',
+            cornerStrokeColor: '#8b5cf6',
+            transparentCorners: false,
+            cornerSize: 8
+        };
 
         switch (shapeName) {
             case "circle":
-                shape = new Circle({
-                    radius: 40,
-                    top: 50,
-                    left: 100,
-                    fill: fillMode ? "blue" : "transparent",
-                    stroke: "blue",
-                    strokeWidth: 2,
-                });
+                shape = new Circle({ ...shapeProps, radius: 50 });
                 break;
-
             case "rectangle":
-                shape = new Rect({
-                    height: 100,
-                    width: 150,
-                    top: 50,
-                    left: 100,
-                    fill: fillMode ? "green" : "transparent",
-                    stroke: "green",
-                    strokeWidth: 2,
-                });
+                shape = new Rect({ ...shapeProps, height: 100, width: 100 });
                 break;
-
         }
 
         if (shape) {
             canvas.add(shape);
-            setSelectedItem(shape);
             canvas.setActiveObject(shape);
             canvas.centerObject(shape);
             canvas.renderAll();
@@ -157,71 +147,84 @@ const Annotations = () => {
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const nextColor = e.target.value;
         setColor(nextColor);
-        const fill = selectedItem?.get("fill");
-        if (fill === "transparent" || fill == null || fill === "") {
-            selectedItem?.set({ stroke: nextColor });
-        }
-        else {
-            selectedItem?.set({ stroke: nextColor, fill: nextColor });
-        }
         if (selectedItem) {
-            selectedItem.setCoords();
+            const fill = selectedItem.get("fill");
+            if (fill === "transparent" || fill == null || fill === "") {
+                selectedItem.set({ stroke: nextColor });
+            } else {
+                selectedItem.set({ stroke: nextColor, fill: nextColor });
+            }
+            canvas?.renderAll();
             canvas?.fire('object:modified' as any, { target: selectedItem } as any);
         }
-        canvas?.renderAll();
     }
 
     const handleBrushWidth = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let val = parseInt(e.target.value, 10);
-        val = val > 10 ? 10 : val;
+        const val = Math.min(20, Math.max(1, parseInt(e.target.value, 10) || 1));
         setBrushWidth(val);
     }
 
-    const handleSelect = useCallback(() => setMode("select"), []);
-
-    const handleDraw = useCallback(() => setMode("pencil"), []);
-
-    const addRectangle = useCallback(() => addShape("rectangle"), [canvas, fillMode]);
-
-    const addCircle = useCallback(() => addShape("circle"), [canvas, fillMode]);
-
-    const handleFill = () => setFillMode((prev) => !prev);
+    const handleFill = () => {
+        const nextFill = !fillMode;
+        setFillMode(nextFill);
+        if (selectedItem) {
+            selectedItem.set({ fill: nextFill ? color : "transparent" });
+            canvas?.renderAll();
+            canvas?.fire('object:modified' as any, { target: selectedItem } as any);
+        }
+    };
 
     return (
-        <div className='d-flex flex-wrap' style={{ height: "max-content" }}>
-            <ToolTipButton
-                icon={FaLocationArrow}
-                className={`${mode === "select" ? "active" : null}`}
-                title='Select'
-                onClick={handleSelect}
-            />
+        <>
+            <div className="sidebar-group">
+                <ToolTipButton
+                    icon={FaLocationArrow}
+                    className={mode === "select" ? "active" : ""}
+                    title='Select Tool'
+                    onClick={() => setMode("select")}
+                />
+                <ToolTipButton
+                    icon={RiPencilFill}
+                    className={mode === "pencil" ? "active" : ""}
+                    title='Pencil Draw'
+                    onClick={() => setMode("pencil")}
+                />
+                <ToolTipButton icon={MdOutlineRectangle} title="Add Rectangle" onClick={() => addShape("rectangle")} />
+                <ToolTipButton icon={FaRegCircle} title="Add Circle" onClick={() => addShape("circle")} />
+                <ToolTipButton icon={BiText} title="Add Text" onClick={addText} />
+            </div>
 
-            <ToolTipButton
-                icon={RiPencilFill}
-                className={`${mode === "pencil" ? "active" : null}`}
-                title='Draw'
-                onClick={handleDraw}
-            />
+            {(selectedItem || mode === "pencil") && (
+                <div className="tool-panel">
+                    <h3 className="outfit">Settings</h3>
+                    
+                    <div className="input-group">
+                        <span className="input-label">Object Color</span>
+                        <input type='color' value={color} onChange={handleColorChange} />
+                    </div>
 
-            <ToolTipButton icon={MdOutlineRectangle} title="Add Rectangle" onClick={addRectangle} />
-            <ToolTipButton icon={FaRegCircle} title="Add Circle" onClick={addCircle} />
-            <ToolTipButton icon={BiText} title="Add Text" onClick={addText} />
-            <ToolTipButton
-                icon={fillMode ? FaWineGlass : FaWineGlassEmpty}
-                title="Fill Shape"
-                className={`${fillMode ? "active" : null}`}
-                onClick={handleFill} />
+                    {mode === "pencil" && (
+                        <div className="input-group">
+                            <span className="input-label">Brush Size: {brushWidth}px</span>
+                            <input type="range" min="1" max="20" value={brushWidth} onChange={handleBrushWidth} />
+                        </div>
+                    )}
 
-            <input className="p-0 rounded-2" style={{ height: "42px" }} type='color' aria-label="Select Color" value={color} onChange={handleColorChange} />
-            {
-                mode === "pencil" &&
-                <input type="number" value={brushWidth} aria-label="Set Brush Width" onChange={handleBrushWidth} min={1} max={10} />
-            }
-
-        </div>
+                    {selectedItem && !(selectedItem instanceof IText) && (
+                        <div className="input-group">
+                            <span className="input-label">Fill Shape</span>
+                            <ToolTipButton
+                                icon={fillMode ? FaWineGlass : FaWineGlassEmpty}
+                                title={fillMode ? "Solid" : "Outline"}
+                                className={fillMode ? "active" : ""}
+                                onClick={handleFill} 
+                            />
+                        </div>
+                    )}
+                </div>
+            )}
+        </>
     )
 }
 
 export default memo(Annotations);
-
-

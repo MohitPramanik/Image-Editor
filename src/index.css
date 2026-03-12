@@ -1,22 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0a0c;
+  --bg-secondary: #141416;
+  --bg-tertiary: #19191d;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #7c3aed;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(20, 20, 22, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html, body, #root {
   height: 100%;
+  overflow: hidden;
 }
 
 body {
-  margin: 0;
-  font-family: "Space Grotesk", system-ui, -apple-system, sans-serif;
-  background: radial-gradient(1200px 700px at 10% 10%, #f4f0ff 0%, #f7f7fb 38%, #eef3ff 100%);
-  color: #0f172a;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(at 0% 0%, hsla(263, 100%, 70%, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, hsla(240, 100%, 70%, 0.1) 0px, transparent 50%);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .outfit {
+  font-family: "Outfit", sans-serif;
 }
 
 button, input, select, textarea {
   font-family: inherit;
+  outline: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
 }

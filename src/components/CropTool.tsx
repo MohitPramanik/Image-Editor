@@ -1,24 +1,21 @@
 import { FabricImage, Rect, Point, util } from 'fabric';
 import { useEffect, useState, useRef } from 'react';
-import { IoCropSharp } from 'react-icons/io5';
+import { IoCropSharp, IoCheckmarkSharp, IoCloseSharp } from 'react-icons/io5';
 import ToolTipButton from './ToolTipButton';
 import { useCanvas } from '../contexts/CanvasContext';
 
 const CropTool = () => {
 
-    const {canvas, isCropping, setIsCropping} = useCanvas();
+    const { canvas, isCropping, setIsCropping } = useCanvas();
     const [selectedImage, setSelectedImage] = useState<FabricImage | null>(null);
     const [cropBox, setCropBox] = useState<Rect | null>(null);
 
-    // Use a Ref to track cropping status synchronously 
-    // This prevents the selection listeners from clearing the state
     const isCroppingRef = useRef(false);
 
     useEffect(() => {
         if (!canvas) return;
 
         const handleSelection = (e: any) => {
-            // IF we are currently cropping, IGNORE selection changes
             if (isCroppingRef.current) return;
 
             const selectedObject = e.selected?.[0];
@@ -49,13 +46,10 @@ const CropTool = () => {
     const handleClipPath = () => {
         if (!selectedImage || !canvas) return;
 
-        // 1. Lock the state IMMEDIATELY
         isCroppingRef.current = true;
         setIsCropping(true);
 
         const img = selectedImage;
-
-        // Disabling image selection so it doesn't move during crop
         img.set({ selectable: false, evented: false });
 
         const box = new Rect({
@@ -63,14 +57,18 @@ const CropTool = () => {
             top: img.top,
             width: img.getScaledWidth() / 2,
             height: img.getScaledHeight() / 2,
-            fill: "rgba(255, 0, 0, 0.1)", // Slight fill makes it easier to see
-            stroke: "red",
+            fill: "rgba(139, 92, 246, 0.2)",
+            stroke: "#8b5cf6",
             strokeWidth: 2,
             strokeUniform: true,
             originX: 'left',
             originY: 'top',
             centeredScaling: false,
             excludeFromExport: true,
+            cornerColor: '#fff',
+            cornerStrokeColor: '#8b5cf6',
+            cornerSize: 10,
+            transparentCorners: false
         });
 
         box.on('moving', () => {
@@ -124,7 +122,6 @@ const CropTool = () => {
         const coords = cropBox.getCoords();
         const transformed = coords.map((pt) => util.transformPoint(new Point(pt.x, pt.y), invMatrix));
 
-        // Fabric local coords are centered; convert to top-left image space
         const imgWidth = img.width || 0;
         const imgHeight = img.height || 0;
 
@@ -151,14 +148,11 @@ const CropTool = () => {
             height: cropH,
             selectable: true,
             evented: true,
-            dirty: true // Tells Fabric v6 to redraw the internal buffer
+            dirty: true
         });
 
-        // Preserve on-canvas position after changing dimensions
         img.setPositionByOrigin(center, 'center', 'center');
-
-        // 6. Finalize updates
-        img.setCoords(); // Updates interaction boundaries
+        img.setCoords();
         canvas.remove(cropBox);
 
         isCroppingRef.current = false;
@@ -171,12 +165,12 @@ const CropTool = () => {
 
     const handleCancelCrop = () => {
         setIsCropping(false);
+        isCroppingRef.current = false;
         if (cropBox) {
             canvas?.remove(cropBox);
             selectedImage?.set({ selectable: true, evented: true });
         }
     }
-
 
     useEffect(() => {
         if (!canvas) return;
@@ -201,23 +195,22 @@ const CropTool = () => {
         };
     }, [canvas]);
 
-
     return (
-        <div className='d-flex m-0 flex-wrap'>
+        <>
             {selectedImage && !isCropping && (
-                <ToolTipButton icon={IoCropSharp} title="Crop" onClick={handleClipPath} />
+                <ToolTipButton icon={IoCropSharp} title="Crop Image" onClick={handleClipPath} />
             )}
             {isCropping && (
-                <>
-                    <button onClick={applyCrop} className='text-danger fw-bold'>
-                        Confirm Crop
+                <div className="crop-controls-bubble">
+                    <button onClick={applyCrop} className="confirm-btn bubble-btn" title="Apply Crop">
+                        <IoCheckmarkSharp size={20} />
                     </button>
-                    <button onClick={handleCancelCrop}>
-                        Cancel Crop
+                    <button onClick={handleCancelCrop} className="cancel-btn bubble-btn" title="Cancel">
+                        <IoCloseSharp size={20} />
                     </button>
-                </>
+                </div>
             )}
-        </div>
+        </>
     );
 };
 

@@ -5,10 +5,10 @@ import { useCanvas } from '../contexts/CanvasContext';
 
 const HistoryControls = () => {
 
-    const {canvas} = useCanvas();
+    const { canvas } = useCanvas();
     const historyStack = useRef<string[]>([]);
     const redoStack = useRef<string[]>([]);
-    const isHandlingHistory = useRef(false); // THE GUARD FLAG
+    const isHandlingHistory = useRef(false);
     const [canUndo, setCanUndo] = useState(false);
     const [canRedo, setCanRedo] = useState(false);
 
@@ -21,21 +21,18 @@ const HistoryControls = () => {
         };
 
         const saveState = (e?: any) => {
-            // IF WE ARE UNDOING/REDOING, DO NOT SAVE A NEW STATE
             if (isHandlingHistory.current) return;
             if (e?.target && (e.target as any).__skipHistory) return;
 
             const json = JSON.stringify(canvas.toJSON());
             
-            // Avoid duplicates
             if (historyStack.current[historyStack.current.length - 1] === json) return;
 
             historyStack.current.push(json);
-            redoStack.current = []; // Clear redo stack on NEW manual actions
+            redoStack.current = [];
             updateButtons();
         };
 
-        // Initial snapshot
         saveState();
         updateButtons();
 
@@ -53,19 +50,18 @@ const HistoryControls = () => {
     const undo = useCallback(async () => {
         if (!canvas || historyStack.current.length <= 1) return;
 
-        isHandlingHistory.current = true; // LOCK SAVING
+        isHandlingHistory.current = true;
 
         const currentState = historyStack.current.pop()!;
         redoStack.current.push(currentState);
 
         const previousState = historyStack.current[historyStack.current.length - 1];
         
-        // Fabric v6 loadFromJSON returns a Promise
         await canvas.loadFromJSON(JSON.parse(previousState));
         canvas.renderAll();
         canvas.fire('history:restored' as any);
 
-        isHandlingHistory.current = false; // UNLOCK SAVING
+        isHandlingHistory.current = false;
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
     }, [canvas]);
@@ -73,7 +69,7 @@ const HistoryControls = () => {
     const redo = useCallback(async () => {
         if (!canvas || redoStack.current.length === 0) return;
 
-        isHandlingHistory.current = true; // LOCK SAVING
+        isHandlingHistory.current = true;
 
         const nextState = redoStack.current.pop()!;
         historyStack.current.push(nextState);
@@ -82,16 +78,16 @@ const HistoryControls = () => {
         canvas.renderAll();
         canvas.fire('history:restored' as any);
 
-        isHandlingHistory.current = false; // UNLOCK SAVING
+        isHandlingHistory.current = false;
         setCanUndo(historyStack.current.length > 1);
         setCanRedo(redoStack.current.length > 0);
     }, [canvas]);
 
     return (
-        <div style={{height: "max-content"}}>
+        <>
             <ToolTipButton icon={IoIosUndo} onClick={undo} title="Undo" disabled={!canUndo} />
             <ToolTipButton icon={IoIosRedo} onClick={redo} title="Redo" disabled={!canRedo} />
-        </div>
+        </>
     );
 };
 

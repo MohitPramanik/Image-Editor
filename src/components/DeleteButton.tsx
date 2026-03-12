@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { type FabricObject } from 'fabric';
 import { useCanvas } from '../contexts/CanvasContext';
-
+import ToolTipButton from './ToolTipButton';
+import { HiTrash } from 'react-icons/hi';
 
 const DeleteButton = () => {
 
-    const { canvas } = useCanvas();
+    const { canvas, isCropping } = useCanvas();
     const [hasSelection, setHasSelection] = useState(false);
 
     useEffect(() => {
@@ -28,39 +29,25 @@ const DeleteButton = () => {
 
     const handleDelete = () => {
         if (!canvas) return;
-
         const activeObjects = canvas.getActiveObjects();
-
         if (activeObjects.length > 0) {
-      
             activeObjects.forEach((obj: FabricObject) => {
                 canvas.remove(obj);
             });
-
             canvas.discardActiveObject();
-            
             canvas.requestRenderAll();
-            
             setHasSelection(false);
         }
     };
 
     return (
-        <button
-            onClick={handleDelete}
-            aria-label='delete-btn'
-            disabled={!hasSelection}
-            style={{
-                backgroundColor: hasSelection ? '#e74c3c' : '#bdc3c7',
-                color: 'white',
-                padding: '8px 16px',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: hasSelection ? 'pointer' : 'not-allowed',
-            }}
-        >
-            Delete
-        </button>
+        <ToolTipButton 
+            icon={HiTrash} 
+            title="Delete Selection" 
+            onClick={handleDelete} 
+            disabled={!hasSelection || isCropping}
+            className="delete-tool-btn"
+        />
     );
 };
 

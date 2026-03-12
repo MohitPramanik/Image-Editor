@@ -7,7 +7,7 @@ import { useCanvas } from "../contexts/CanvasContext";
 
 const ZoomControls = () => {
 
-    const { canvas } = useCanvas();
+    const { canvas, isCropping } = useCanvas();
     const minZoom = 0.2;
     const maxZoom = 4;
     const step = 0.1;
@@ -42,10 +42,10 @@ const ZoomControls = () => {
     };
 
     return (
-        <div className="d-flex w-max">
-            <ToolTipButton icon={GoZoomOut} title="Zoom-out" onClick={zoomOut} />
-            <ToolTipButton icon={GoZoomIn} title="Zoom-in" onClick={zoomIn} />
-            <ToolTipButton icon={TbZoomReset} title="Reset zoom" onClick={resetZoom} />
+        <div className="sidebar-group">
+            <ToolTipButton icon={GoZoomOut} title="Zoom Out" onClick={zoomOut} disabled={isCropping} />
+            <ToolTipButton icon={GoZoomIn} title="Zoom In" onClick={zoomIn} disabled={isCropping} />
+            <ToolTipButton icon={TbZoomReset} title="Reset Zoom" onClick={resetZoom} disabled={isCropping} />
         </div>
     );
 };

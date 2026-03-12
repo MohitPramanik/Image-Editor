@@ -1,4 +1,4 @@
-import { FabricImage} from 'fabric';
+import { FabricImage } from 'fabric';
 import { useCallback, useEffect, useState } from 'react'
 import ToolTipButton from './ToolTipButton';
 import { MdRotate90DegreesCcw } from 'react-icons/md';
@@ -9,22 +9,14 @@ const Rotate = () => {
 
     const { canvas, isCropping } = useCanvas();
     const [selectedImage, setSelectedImage] = useState<FabricImage | null>(null);
-    const [btnEnabled, setBtnEnabled] = useState<boolean>(false);
-
-    useEffect(() => {
-        if (!isCropping && selectedImage) setBtnEnabled(true);
-        else setBtnEnabled(false);
-    }, [isCropping, selectedImage])
 
     useEffect(() => {
         if (!canvas) return;
 
         const handleSelection = (e: any) => {
             const selectedObject = e.selected?.[0];
-
             if (selectedObject instanceof FabricImage) {
                 setSelectedImage(selectedObject);
-
             } else {
                 setSelectedImage(null);
             }
@@ -47,44 +39,36 @@ const Rotate = () => {
 
     const rotateImage = useCallback(() => {
         if (!selectedImage || !canvas) return;
-
         const currentAngle = selectedImage.angle || 0;
-
         selectedImage.set({
             angle: currentAngle - 90,
             centeredRotation: true,
         });
-
-
         selectedImage.setCoords();
         canvas.renderAll();
         canvas.fire('object:modified', { target: selectedImage } as any);
-    }, [selectedImage]);
+    }, [selectedImage, canvas]);
 
     const resetRotation = useCallback(() => {
         if (!selectedImage || !canvas) return;
-
-
         selectedImage.set({
             angle: 0,
             centeredRotation: true,
         });
-
-
         selectedImage.setCoords();
         canvas.renderAll();
         canvas.fire('object:modified', { target: selectedImage } as any);
-    }, [selectedImage]);
+    }, [selectedImage, canvas]);
 
     return (
-        <div className='d-flex w-max'>
-            {btnEnabled &&
+        <>
+            {selectedImage && !isCropping && (
                 <>
-                    <ToolTipButton icon={MdRotate90DegreesCcw} title='Rotate by 90 deg' onClick={rotateImage} />
-                    <ToolTipButton icon={GrPowerReset} title="Reset Rotation" onClick={resetRotation} />
+                    <ToolTipButton icon={MdRotate90DegreesCcw} title='Rotate 90°' onClick={rotateImage} />
+                    <ToolTipButton icon={GrPowerReset} title="Reset Orientation" onClick={resetRotation} />
                 </>
-            }
-        </div>
+            )}
+        </>
     )
 }
 

@@ -5,7 +5,7 @@ import { useCanvas } from "../contexts/CanvasContext";
 
 const LayerControls = () => {
 
-    const { canvas } = useCanvas();
+    const { canvas, isCropping } = useCanvas();
     const [hasSelection, setHasSelection] = useState(false);
 
     useEffect(() => {
@@ -47,10 +47,14 @@ const LayerControls = () => {
     }, [canvas]);
 
     return (
-        <div className="d-flex w-max flex-wrap">
-            <ToolTipButton icon={BsLayersHalf} title="Bring Forward" onClick={bringForward} disabled={!hasSelection} />
-            <ToolTipButton icon={BsLayersFill} title="Send Backward" onClick={sendBackward} disabled={!hasSelection} />
-        </div>
+        <>
+            {hasSelection && !isCropping && (
+                <>
+                    <ToolTipButton icon={BsLayersHalf} title="Bring Forward" onClick={bringForward} />
+                    <ToolTipButton icon={BsLayersFill} title="Send Backward" onClick={sendBackward} />
+                </>
+            )}
+        </>
     );
 };
 

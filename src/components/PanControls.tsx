@@ -4,17 +4,16 @@ import { FaHandPaper } from "react-icons/fa";
 
 const PanControls = () => {
 
-    const { isPanning, setIsPanning } = useCanvas();
+    const { isPanning, setIsPanning, isCropping } = useCanvas();
 
     return (
-        <div className="d-md-none d-flex w-max">
-            <ToolTipButton
-                icon={FaHandPaper}
-                title="Pan"
-                className={isPanning ? "active" : undefined}
-                onClick={() => setIsPanning((prev) => !prev)}
-            />
-        </div>
+        <ToolTipButton
+            icon={FaHandPaper}
+            title="Pan Workspace"
+            className={isPanning ? "active" : ""}
+            onClick={() => setIsPanning((prev) => !prev)}
+            disabled={isCropping}
+        />
     );
 };
 
